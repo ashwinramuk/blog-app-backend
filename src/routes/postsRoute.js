@@ -13,7 +13,7 @@ cloudinary.config({
     api_key: process.env.API_KEY,
     api_secret: process.env.API_SECRET
 });
-router.post("/", upload.single("image"), (req,res,next)=>{
+router.post("/", upload.single("postImage"), (req,res,next)=>{
     let streamUpload = (req) =>{
         return new Promise((resolve,reject)=>{
             let stream = cloudinary.uploader.upload_stream(
@@ -32,7 +32,7 @@ router.post("/", upload.single("image"), (req,res,next)=>{
         try{
             let result = await streamUpload(req);
             console.log("result",result);
-            req.body.imgURL=result.url;
+            req.body.postImage=result.url;
             next();
         }catch(e){
             console.log("error",e)
@@ -43,7 +43,7 @@ router.post("/", upload.single("image"), (req,res,next)=>{
 },async(req,res)=>{
 
     try{
-        let result = await posts.create({...req.body,userID:req.userID})
+        let result = await posts.create({...req.body,user:req.userID})
         res.status(200).json({
             status:"Success",
             message:"post created Successfully",
@@ -59,7 +59,7 @@ router.post("/", upload.single("image"), (req,res,next)=>{
 })
 router.get("/", async(req,res)=>{
     try{
-        let result = await posts.find({userID:req.userID})
+        let result = await posts.find({user:req.userID})
         res.status(200).json({
             status:"Success",
             message:"user's posts retrieved Successfully",
